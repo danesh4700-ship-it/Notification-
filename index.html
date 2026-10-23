@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>نوتیفیکیشن پیشرفته</title>
+</head>
+<body>
+  <h2>نوتیفیکیشن با Service Worker</h2>
+  <button onclick="requestPermission()">درخواست مجوز</button>
+  <button onclick="sendNotification()">ارسال نوتیفیکیشن</button>
+
+  <script>
+    // ثبت Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker ثبت شد', reg))
+        .catch(err => console.error('خطا در ثبت SW:', err));
+    }
+
+    // درخواست مجوز
+    function requestPermission() {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          alert('مجوز داده شد ✅');
+        } else {
+          alert('مجوز داده نشد ❌');
+        }
+      });
+    }
+
+    // ارسال نوتیفیکیشن
+    function sendNotification() {
+      if (Notification.permission !== 'granted') {
+        alert('اول مجوز بده');
+        return;
+      }
+
+      navigator.serviceWorker.ready.then(registration => {
+        registration.showNotification('عنوان نوتیفیکیشن', {
+          body: 'این یک نوتیفیکیشن پیشرفته است',
+          icon: 'https://cdn-icons-png.flaticon.com/512/1827/1827349.png',
+          badge: 'https://cdn-icons-png.flaticon.com/512/1827/1827349.png',
+          vibrate: [200, 100, 200],
+          actions: [
+            { action: 'open', title: 'باز کردن' },
+            { action: 'close', title: 'بستن' }
+          ],
+          data: {
+            url: 'https://example.com'
+          }
+        });
+      });
+    }
+  </script>
+</body>
+</html>
